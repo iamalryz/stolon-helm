@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "stolon.keeper.fullname" . }}
+  labels:
+    {{- include "stolon.keeper.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+  - name: postgresql
+    port: 5432
+    targetPort: postgresql
+  selector:
+    {{- include "stolon.keeper.selectorLabels" . | nindent 4 }}

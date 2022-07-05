@@ -1,0 +1,104 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "stolon.keeper.fullname" . }}
+  labels:
+    {{- include "stolon.keeper.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "stolon.keeper.fullname" . }}-headless
+  replicas: {{ .Values.keeper.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "stolon.keeper.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "stolon.keeper.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.keeper.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.keeper.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.keeper.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ include "stolon.keeper.fullname" . }}
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command:
+        - /bin/bash
+        - -ec
+        - |
+          export STKEEPER_UID=$(hostname | awk -F '-' '{ print $NF }')
+          chown -R stolon:stolon $STKEEPER_DATA_DIR
+          exec gosu stolon stolon-keeper
+        env:
+        - name: STKEEPER_DEBUG
+          value: {{ .Values.keeper.debug | quote }}
+        - name: STKEEPER_CLUSTER_NAME
+          value: {{ .Values.clusterName }}
+        - name: STKEEPER_DATA_DIR
+          value: /stolon/data
+        - name: STKEEPER_STORE_BACKEND
+          value: {{ .Values.store.backend }}
+        - name: STKEEPER_STORE_ENDPOINTS
+          value: {{ .Values.store.endpoints }}
+        - name: STKEEPER_PG_LISTEN_ADDRESS
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: STKEEPER_METRICS_LISTEN_ADDRESS
+          value: 0.0.0.0:8080
+        - name: STKEEPER_PG_REPL_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "stolon.keeper.fullname" . }}
+              key: stkeeper-pg-repl-username
+        - name: STKEEPER_PG_REPL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "stolon.keeper.fullname" . }}
+              key: stkeeper-pg-repl-password
+        - name: STKEEPER_PG_SU_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "stolon.keeper.fullname" . }}
+              key: stkeeper-pg-su-username
+        - name: STKEEPER_PG_SU_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "stolon.keeper.fullname" . }}
+              key: stkeeper-pg-su-password
+        ports:
+        - name: postgresql
+          containerPort: 5432
+          protocol: TCP
+        - name: metrics
+          containerPort: 8080
+          protocol: TCP
+        resources:
+          {{- toYaml .Values.keeper.resources | nindent 10 }}
+        volumeMounts:
+        - name: data
+          mountPath: /stolon/data
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes:
+      {{- range .Values.keeper.persistence.accessModes }}
+      - {{ . }}
+      {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.keeper.persistence.size }}

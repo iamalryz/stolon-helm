@@ -1,0 +1,29 @@
+nameOverride: ""
+
+image:
+  repository: sorintlab/stolon
+  tag: v0.16.0-pg12
+  pullPolicy: IfNotPresent
+
+clusterName: stolon-cluster
+store:
+  backend: etcdv3
+  endpoints: http://etcd:2379
+
+keeper:
+  replicaCount: 2
+  
+  persistence:
+    enabled: true
+    accessModes:
+    - ReadWriteOnce
+    size: 10Gi
+    resources: {}
+
+  debug: false
+
+  security:
+    suUsername: ""
+    suPassword: ""
+    replUsername: ""
+    replPassword: ""
