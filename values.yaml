@@ -27,3 +27,8 @@ keeper:
     suPassword: ""
     replUsername: ""
     replPassword: ""
+
+sentinel:
+  replicaCount: 1
+
+  debug: false

@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "stolon.sentinel.fullname" . }}
+  labels:
+    {{- include "stolon.sentinel.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.sentinel.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "stolon.sentinel.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "stolon.sentinel.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.keeper.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.keeper.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.keeper.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ include "stolon.sentinel.fullname" . }}
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command:
+        - gosu 
+        args:
+        - stolon
+        - stolon-sentinel
+        resources:
+          {{- toYaml .Values.sentinel.resources | nindent 10 }}
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: STSENTINEL_DEBUG
+          value: {{ .Values.sentinel.debug | quote }}
+        - name: STSENTINEL_CLUSTER_NAME
+          value: {{ .Values.clusterName }}
+        - name: STSENTINEL_STORE_BACKEND
+          value: {{ .Values.store.backend }}
+        - name: STSENTINEL_STORE_ENDPOINTS
+          value: {{ .Values.store.endpoints }}
+        - name: STSENTINEL_METRICS_LISTEN_ADDRESS
+          value: 0.0.0.0:8080
+        ports:
+        - name: metrics
+          containerPort: 8080
+          protocol: TCP
