@@ -12,6 +12,11 @@ etcd:
     rbac:
       create: false
 
+etcdImage:
+  repository: docker.io/bitnami/etcd
+  tag: 3.5.1-debian-10-r88
+  pullPolicy: IfNotPresent
+
 clusterName: default
 store:
   backend: etcdv3
