@@ -49,7 +49,7 @@ spec:
         - name: STSENTINEL_STORE_BACKEND
           value: {{ .Values.store.backend }}
         - name: STSENTINEL_STORE_ENDPOINTS
-          value: {{ .Values.store.endpoints }}
+          value: {{ include "stolon.store.endpoints" . }}
         - name: STSENTINEL_METRICS_LISTEN_ADDRESS
           value: 0.0.0.0:8080
         ports:

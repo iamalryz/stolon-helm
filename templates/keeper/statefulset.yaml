@@ -52,7 +52,7 @@ spec:
         - name: STKEEPER_STORE_BACKEND
           value: {{ .Values.store.backend }}
         - name: STKEEPER_STORE_ENDPOINTS
-          value: {{ .Values.store.endpoints }}
+          value: {{ include "stolon.store.endpoints" . }}
         - name: STKEEPER_PG_LISTEN_ADDRESS
           valueFrom:
             fieldRef:

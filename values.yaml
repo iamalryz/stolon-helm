@@ -7,11 +7,15 @@ image:
 
 etcd:
   enabled: true
+  replicaCount: 3
+  auth:
+    rbac:
+      create: false
 
-clusterName: stolon-cluster
+clusterName: default
 store:
   backend: etcdv3
-  endpoints: http://stolon-etcd:2379
+  endpoints: []
 
 keeper:
   replicaCount: 2
