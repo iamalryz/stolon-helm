@@ -30,7 +30,7 @@ keeper:
     replPassword: ""
 
 sentinel:
-  replicaCount: 1
+  replicaCount: 2
 
   resources: {}
 
