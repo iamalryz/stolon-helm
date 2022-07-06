@@ -14,11 +14,11 @@ keeper:
   replicaCount: 2
   
   persistence:
-    enabled: true
     accessModes:
     - ReadWriteOnce
     size: 10Gi
-    resources: {}
+
+  resources: {}
 
   debug: false
 
