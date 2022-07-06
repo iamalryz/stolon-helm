@@ -50,6 +50,12 @@ spec:
           value: {{ .Values.store.backend }}
         - name: STPROXY_STORE_ENDPOINTS
           value: {{ include "stolon.store.endpoints" . }}
+        - name: STOLONCTL_CLUSTER_NAME
+          value: {{ .Values.clusterName }}
+        - name: STOLONCTL_STORE_BACKEND
+          value: {{ .Values.store.backend }}
+        - name: STOLONCTL_STORE_ENDPOINTS
+          value: {{ include "stolon.store.endpoints" . }}
         - name: STPROXY_LISTEN_ADDRESS
           value: 0.0.0.0
         - name: STPROXY_METRICS_LISTEN_ADDRESS

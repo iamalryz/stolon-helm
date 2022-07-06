@@ -53,6 +53,12 @@ spec:
           value: {{ .Values.store.backend }}
         - name: STKEEPER_STORE_ENDPOINTS
           value: {{ include "stolon.store.endpoints" . }}
+        - name: STOLONCTL_CLUSTER_NAME
+          value: {{ .Values.clusterName }}
+        - name: STOLONCTL_STORE_BACKEND
+          value: {{ .Values.store.backend }}
+        - name: STOLONCTL_STORE_ENDPOINTS
+          value: {{ include "stolon.store.endpoints" . }}
         - name: STKEEPER_PG_LISTEN_ADDRESS
           valueFrom:
             fieldRef:
