@@ -35,3 +35,10 @@ sentinel:
   resources: {}
 
   debug: false
+
+proxy:
+  replicaCount: 2
+
+  resources: {}
+
+  debug: false

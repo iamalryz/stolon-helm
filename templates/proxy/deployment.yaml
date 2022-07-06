@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "stolon.proxy.fullname" . }}
+  labels:
+    {{- include "stolon.proxy.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.sentinel.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "stolon.proxy.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "stolon.proxy.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.keeper.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.keeper.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.keeper.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ include "stolon.proxy.fullname" . }}
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command:
+        - gosu 
+        args:
+        - stolon
+        - stolon-proxy
+        resources:
+          {{- toYaml .Values.sentinel.resources | nindent 10 }}
+        env:
+        - name: STPROXY_DEBUG
+          value: {{ .Values.sentinel.debug | quote }}
+        - name: STPROXY_CLUSTER_NAME
+          value: {{ .Values.clusterName }}
+        - name: STPROXY_STORE_BACKEND
+          value: {{ .Values.store.backend }}
+        - name: STPROXY_STORE_ENDPOINTS
+          value: {{ .Values.store.endpoints }}
+        - name: STPROXY_LISTEN_ADDRESS
+          value: 0.0.0.0
+        - name: STPROXY_METRICS_LISTEN_ADDRESS
+          value: 0.0.0.0:8080
+        ports:
+        - name: postgresql
+          containerPort: 5432
+          protocol: TCP
+        - name: metrics
+          containerPort: 8080
+          protocol: TCP
