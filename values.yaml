@@ -5,10 +5,13 @@ image:
   tag: v0.16.0-pg12
   pullPolicy: IfNotPresent
 
+etcd:
+  enabled: true
+
 clusterName: stolon-cluster
 store:
   backend: etcdv3
-  endpoints: http://etcd:2379
+  endpoints: http://stolon-etcd:2379
 
 keeper:
   replicaCount: 2
