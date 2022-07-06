@@ -13,12 +13,13 @@ store:
 keeper:
   replicaCount: 2
   
+  resources: {}
+
   persistence:
     accessModes:
     - ReadWriteOnce
     size: 10Gi
 
-  resources: {}
 
   debug: false
 
@@ -30,5 +31,7 @@ keeper:
 
 sentinel:
   replicaCount: 1
+
+  resources: {}
 
   debug: false
