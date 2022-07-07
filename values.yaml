@@ -18,6 +18,49 @@ etcdImage:
   pullPolicy: IfNotPresent
 
 clusterName: default
+clusterSpec:
+  initMode: new
+  initTimeout: 5m0s
+  syncTimeout: 0s
+  dbWaitReadyTimeout: 1m0s
+  failInterval: 20s
+  deadKeeperRemovalInterval: 48h0m0s
+  proxyCheckInterval: 5s
+  proxyTimeout: 15s
+  maxStandbys: 20
+  maxStandbysPerSender: 3
+  maxStandbyLag: 1232896
+  synchronousReplication: false
+  minSynchronousStandbys: 1
+  maxSynchronousStandbys: 1
+  additionalWalSenders: 5
+  additionalMasterReplicationSlots:
+  usePgrewind: false
+  mergePgParameters: true
+  role: master
+  newConfig:
+  pitrConfig:
+  existingConfig:
+  standbyConfig:
+  defaultSUReplAccessMode: all
+  pgParameters:
+    datestyle: iso, mdy
+    default_text_search_config: pg_catalog.english
+    dynamic_shared_memory_type: posix
+    lc_messages: en_US.utf8
+    lc_monetary: en_US.utf8
+    lc_numeric: en_US.utf8
+    lc_time: en_US.utf8
+    log_timezone: Etc/UTC
+    max_connections: '100'
+    max_wal_size: 1GB
+    min_wal_size: 80MB
+    shared_buffers: 128MB
+    timezone: Etc/UTC
+    wal_level: replica
+  pgHBA:
+  automaticPgRestart: false
+
 store:
   backend: etcdv3
   endpoints: []
