@@ -65,6 +65,9 @@ store:
   backend: etcdv3
   endpoints: []
 
+hooks:
+  autoInitCluster: true
+
 keeper:
   replicaCount: 2
   
