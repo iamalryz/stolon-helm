@@ -1,0 +1,57 @@
+{{- if and .Values.hooks.autoUpdateCluster .Values.clusterSpec }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "stolon.update-cluster.fullname" . }}
+  labels:
+    {{- include "stolon.update-cluster.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": post-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  template:
+    metadata:
+      labels:
+        {{- include "stolon.update-cluster.selectorLabels" . | nindent 8 }}
+    spec:
+      restartPolicy: OnFailure
+      initContainers:
+      - name: {{ include "stolon.update-cluster.fullname" . }}-wait-etcd
+        image: {{ .Values.etcdImage.repository }}:{{ .Values.etcdImage.tag }}
+        imagePullPolicy: {{ .Values.etcdImage.pullPolicy }}
+        command:
+        - /bin/bash
+        - -ec
+        - |
+          echo "Waiting until etcd cluster becomes healthy"
+          while true; do
+            echo "Checking etcd cluster health"
+            etcdctl endpoint health --cluster --endpoints {{ include "stolon.store.endpoints" . }} && break
+            echo
+            sleep 5
+          done
+      containers:
+      - name: {{ include "stolon.update-cluster.fullname" . }}
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command:
+        - stolonctl
+        args:
+        - update
+        - --file 
+        - /stolon/cluster-spec/cluster-spec.json
+        env:
+        - name: STOLONCTL_CLUSTER_NAME
+          value: {{ .Values.clusterName }}
+        - name: STOLONCTL_STORE_BACKEND
+          value: {{ .Values.store.backend }}
+        - name: STOLONCTL_STORE_ENDPOINTS
+          value: {{ include "stolon.store.endpoints" . }}
+        volumeMounts:
+        - name: cluster-spec
+          mountPath: /stolon/cluster-spec
+      volumes:
+      - name: cluster-spec
+        configMap:
+          name: {{ include "stolon.fullname" . }}-cluster-spec
+{{- end }}

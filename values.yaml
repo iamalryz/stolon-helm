@@ -67,6 +67,7 @@ store:
 
 hooks:
   autoInitCluster: true
+  autoUpdateCluster: true
 
 keeper:
   replicaCount: 2
