@@ -75,5 +75,15 @@ spec:
         - name: metrics
           containerPort: 8080
           protocol: TCP
+        readinessProbe:
+          {{- with .Values.proxy.readinessProbe }}
+          failureThreshold: {{ .failureThreshold }}
+          initialDelaySeconds: {{ .initialDelaySeconds }}
+          periodSeconds: {{ .periodSeconds }}
+          successThreshold: {{ .successThreshold }}
+          tcpSocket:
+            port: 5432
+          timeoutSeconds: {{ .timeoutSeconds }}
+          {{- end }}
         resources:
           {{- toYaml .Values.proxy.resources | nindent 10 }}
