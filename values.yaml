@@ -71,8 +71,12 @@ hooks:
 
 keeper:
   replicaCount: 2
-  
+
+  nodeSelector: {}
+
   affinity: {}
+
+  tolerations: []
 
   resources:
     limits: {}
@@ -95,7 +99,11 @@ keeper:
 sentinel:
   replicaCount: 2
 
+  nodeSelector: {}
+
   affinity: {}
+
+  tolerations: []
 
   resources:
     limits: {}
@@ -106,7 +114,11 @@ sentinel:
 proxy:
   replicaCount: 2
 
+  nodeSelector: {}
+
   affinity: {}
+
+  tolerations: []
 
   resources:
     limits: {}
