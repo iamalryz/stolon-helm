@@ -2,7 +2,7 @@ apiVersion: v2
 appVersion: 0.16.0
 description: Stolon - PostgreSQL cloud native High Availability
 name: stolon
-version: 0.1.0
+version: 0.2.0
 dependencies:
 - name: etcd
   repository: https://charts.bitnami.com/bitnami
