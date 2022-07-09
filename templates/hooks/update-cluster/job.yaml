@@ -1,22 +1,22 @@
-{{- if and .Values.hooks.autoInitCluster .Values.clusterSpec }}
+{{- if and .Values.hooks.autoUpdateCluster .Values.clusterSpec }}
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ include "stolon.init-cluster.fullname" . }}
+  name: {{ include "stolon.update-cluster.fullname" . }}
   labels:
-    {{- include "stolon.init-cluster.labels" . | nindent 4 }}
+    {{- include "stolon.update-cluster.labels" . | nindent 4 }}
   annotations:
-    "helm.sh/hook": post-install
+    "helm.sh/hook": post-upgrade
     "helm.sh/hook-delete-policy": before-hook-creation
 spec:
   template:
     metadata:
       labels:
-        {{- include "stolon.init-cluster.selectorLabels" . | nindent 8 }}
+        {{- include "stolon.update-cluster.selectorLabels" . | nindent 8 }}
     spec:
       restartPolicy: OnFailure
       initContainers:
-      - name: {{ include "stolon.init-cluster.fullname" . }}-wait-etcd
+      - name: {{ include "stolon.update-cluster.fullname" . }}-wait-etcd
         image: {{ .Values.etcdImage.repository }}:{{ .Values.etcdImage.tag }}
         imagePullPolicy: {{ .Values.etcdImage.pullPolicy }}
         command:
@@ -31,18 +31,15 @@ spec:
             sleep 5
           done
       containers:
-      - name: {{ include "stolon.init-cluster.fullname" . }}
+      - name: {{ include "stolon.update-cluster.fullname" . }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         command:
         - stolonctl
         args:
-        - init
-        - --yes
-        {{- if .Values.clusterSpec }}
+        - update
         - --file 
         - /stolon/cluster-spec/cluster-spec.json
-        {{- end }}
         env:
         - name: STOLONCTL_CLUSTER_NAME
           value: {{ .Values.clusterName }}
@@ -50,15 +47,11 @@ spec:
           value: {{ .Values.store.backend }}
         - name: STOLONCTL_STORE_ENDPOINTS
           value: {{ include "stolon.store.endpoints" . }}
-        {{- if .Values.clusterSpec }}
         volumeMounts:
         - name: cluster-spec
           mountPath: /stolon/cluster-spec
-        {{- end }}
-      {{- if .Values.clusterSpec }}
       volumes:
       - name: cluster-spec
         configMap:
           name: {{ include "stolon.fullname" . }}-cluster-spec
-      {{- end }}
 {{- end }}
