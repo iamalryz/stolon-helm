@@ -39,8 +39,6 @@ spec:
         args:
         - stolon
         - stolon-proxy
-        resources:
-          {{- toYaml .Values.proxy.resources | nindent 10 }}
         env:
         - name: STPROXY_DEBUG
           value: {{ .Values.sentinel.debug | quote }}
@@ -67,3 +65,5 @@ spec:
         - name: metrics
           containerPort: 8080
           protocol: TCP
+        resources:
+          {{- toYaml .Values.proxy.resources | nindent 10 }}
