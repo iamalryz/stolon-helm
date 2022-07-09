@@ -22,9 +22,19 @@ spec:
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.sentinel.affinity }}
+      {{- if .Values.sentinel.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
+      {{- else }}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  {{- include "stolon.sentinel.selectorLabels" . | nindent 18 }}
+              topologyKey: kubernetes.io/hostname
+            weight: 1
       {{- end }}
       {{- with .Values.sentinel.tolerations }}
       tolerations:

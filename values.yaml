@@ -72,6 +72,8 @@ hooks:
 keeper:
   replicaCount: 2
   
+  affinity: {}
+
   resources:
     limits: {}
     requests: {}
@@ -93,6 +95,8 @@ keeper:
 sentinel:
   replicaCount: 2
 
+  affinity: {}
+
   resources:
     limits: {}
     requests: {}
@@ -101,6 +105,8 @@ sentinel:
 
 proxy:
   replicaCount: 2
+
+  affinity: {}
 
   resources:
     limits: {}
