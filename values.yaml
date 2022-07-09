@@ -72,7 +72,9 @@ hooks:
 keeper:
   replicaCount: 2
   
-  resources: {}
+  resources:
+    limits: {}
+    requests: {}
 
   persistence:
     accessModes:
@@ -91,13 +93,17 @@ keeper:
 sentinel:
   replicaCount: 2
 
-  resources: {}
+  resources:
+    limits: {}
+    requests: {}
 
   debug: false
 
 proxy:
   replicaCount: 2
 
-  resources: {}
+  resources:
+    limits: {}
+    requests: {}
 
   debug: false
