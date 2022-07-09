@@ -18,15 +18,15 @@ spec:
       imagePullSecrets:
         {{ toYaml . | indent 8 }}
       {{- end }}
-      {{- with .Values.keeper.nodeSelector }}
+      {{- with .Values.sentinel.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.keeper.affinity }}
+      {{- with .Values.sentinel.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.keeper.tolerations }}
+      {{- with .Values.sentinel.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -63,4 +63,4 @@ spec:
           containerPort: 8080
           protocol: TCP
         resources:
-          {{- toYaml .Values.keeper.resources | nindent 10 }}
+          {{- toYaml .Values.sentinel.resources | nindent 10 }}
