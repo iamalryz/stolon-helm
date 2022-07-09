@@ -23,9 +23,17 @@ spec:
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.keeper.affinity }}
+      {{- if .Values.keeper.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
+      {{- else }}
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                {{- include "stolon.keeper.selectorLabels" . | nindent 16 }}
+            topologyKey: kubernetes.io/hostname
       {{- end }}
       {{- with .Values.keeper.tolerations }}
       tolerations:

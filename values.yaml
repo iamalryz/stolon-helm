@@ -71,8 +71,16 @@ hooks:
 
 keeper:
   replicaCount: 2
-  
-  resources: {}
+
+  nodeSelector: {}
+
+  affinity: {}
+
+  tolerations: []
+
+  resources:
+    limits: {}
+    requests: {}
 
   persistence:
     accessModes:
@@ -91,13 +99,36 @@ keeper:
 sentinel:
   replicaCount: 2
 
-  resources: {}
+  nodeSelector: {}
+
+  affinity: {}
+
+  tolerations: []
+
+  resources:
+    limits: {}
+    requests: {}
 
   debug: false
 
 proxy:
   replicaCount: 2
 
-  resources: {}
+  nodeSelector: {}
+
+  affinity: {}
+
+  tolerations: []
+
+  readinessProbe:
+    failureThreshold: 3
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    successThreshold: 1
+    timeoutSeconds: 1
+
+  resources:
+    limits: {}
+    requests: {}
 
   debug: false

@@ -18,15 +18,25 @@ spec:
       imagePullSecrets:
         {{ toYaml . | indent 8 }}
       {{- end }}
-      {{- with .Values.keeper.nodeSelector }}
+      {{- with .Values.proxy.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.keeper.affinity }}
+      {{- if .Values.proxy.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
+      {{- else }}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  {{- include "stolon.proxy.selectorLabels" . | nindent 18 }}
+              topologyKey: kubernetes.io/hostname
+            weight: 1
       {{- end }}
-      {{- with .Values.keeper.tolerations }}
+      {{- with .Values.proxy.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -39,8 +49,6 @@ spec:
         args:
         - stolon
         - stolon-proxy
-        resources:
-          {{- toYaml .Values.sentinel.resources | nindent 10 }}
         env:
         - name: STPROXY_DEBUG
           value: {{ .Values.sentinel.debug | quote }}
@@ -67,3 +75,15 @@ spec:
         - name: metrics
           containerPort: 8080
           protocol: TCP
+        readinessProbe:
+          {{- with .Values.proxy.readinessProbe }}
+          failureThreshold: {{ .failureThreshold }}
+          initialDelaySeconds: {{ .initialDelaySeconds }}
+          periodSeconds: {{ .periodSeconds }}
+          successThreshold: {{ .successThreshold }}
+          tcpSocket:
+            port: 5432
+          timeoutSeconds: {{ .timeoutSeconds }}
+          {{- end }}
+        resources:
+          {{- toYaml .Values.proxy.resources | nindent 10 }}
