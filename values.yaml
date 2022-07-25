@@ -10,6 +10,11 @@ etcdImage:
   tag: 3.5.1-debian-10-r88
   pullPolicy: IfNotPresent
 
+consulImage:
+  repository: docker.io/bitnami/consul
+  tag: 1.12.3-debian-11-r3
+  pullPolicy: IfNotPresent
+
 clusterName: default
 clusterSpec:
   initMode: new
@@ -55,8 +60,8 @@ clusterSpec:
   automaticPgRestart: false
 
 store:
-  backend: etcdv3
-  endpoints: etcd-headless
+  backend: consul
+  endpoints: consul-headless:8500
 
 hooks:
   autoInitCluster: true
