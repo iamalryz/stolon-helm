@@ -59,13 +59,13 @@ spec:
         - name: STSENTINEL_STORE_BACKEND
           value: {{ .Values.store.backend }}
         - name: STSENTINEL_STORE_ENDPOINTS
-          value: {{ include "stolon.store.endpoints" . }}
+          value: {{ .Values.store.endpoints }}
         - name: STOLONCTL_CLUSTER_NAME
           value: {{ .Values.clusterName }}
         - name: STOLONCTL_STORE_BACKEND
           value: {{ .Values.store.backend }}
         - name: STOLONCTL_STORE_ENDPOINTS
-          value: {{ include "stolon.store.endpoints" . }}
+          value: {{ .Values.store.endpoints }}
         - name: STSENTINEL_METRICS_LISTEN_ADDRESS
           value: 0.0.0.0:8080
         ports:

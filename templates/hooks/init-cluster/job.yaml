@@ -16,6 +16,7 @@ spec:
     spec:
       restartPolicy: OnFailure
       initContainers:
+      {{- if eq .Values.store.backend "etcdv3" }}
       - name: {{ include "stolon.init-cluster.fullname" . }}-wait-etcd
         image: {{ .Values.etcdImage.repository }}:{{ .Values.etcdImage.tag }}
         imagePullPolicy: {{ .Values.etcdImage.pullPolicy }}
@@ -26,10 +27,26 @@ spec:
           echo "Waiting until etcd cluster becomes healthy"
           while true; do
             echo "Checking etcd cluster health"
-            etcdctl endpoint health --cluster --endpoints {{ include "stolon.store.endpoints" . }} && break
+            etcdctl endpoint health --cluster --endpoints {{ .Values.store.endpoints }} && break
             echo
             sleep 5
           done
+      {{- else if eq .Values.store.backend "consul" }}
+      - name: {{ include "stolon.init-cluster.fullname" . }}-wait-consul
+        image: {{ .Values.consulImage.repository }}:{{ .Values.consulImage.tag }}
+        imagePullPolicy: {{ .Values.consulImage.pullPolicy }}
+        command:
+        - /bin/bash
+        - -ec
+        - |
+          echo "Waiting until consul cluster becomes healthy"
+          while true; do
+            echo "Checking consul cluster health"
+            consul members -http-addr=http://{{ .Values.store.endpoints }} && break
+            echo
+            sleep 5
+          done
+      {{- end }}
       containers:
       - name: {{ include "stolon.init-cluster.fullname" . }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
@@ -49,7 +66,7 @@ spec:
         - name: STOLONCTL_STORE_BACKEND
           value: {{ .Values.store.backend }}
         - name: STOLONCTL_STORE_ENDPOINTS
-          value: {{ include "stolon.store.endpoints" . }}
+          value: {{ .Values.store.endpoints }}
         {{- if .Values.clusterSpec }}
         volumeMounts:
         - name: cluster-spec

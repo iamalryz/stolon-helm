@@ -5,16 +5,14 @@ image:
   tag: v0.16.0-pg12
   pullPolicy: IfNotPresent
 
-etcd:
-  enabled: true
-  replicaCount: 3
-  auth:
-    rbac:
-      create: false
-
 etcdImage:
   repository: docker.io/bitnami/etcd
   tag: 3.5.1-debian-10-r88
+  pullPolicy: IfNotPresent
+
+consulImage:
+  repository: docker.io/bitnami/consul
+  tag: 1.12.3-debian-11-r3
   pullPolicy: IfNotPresent
 
 clusterName: default
@@ -62,8 +60,8 @@ clusterSpec:
   automaticPgRestart: false
 
 store:
-  backend: etcdv3
-  endpoints: []
+  backend: consul
+  endpoints: consul-headless:8500
 
 hooks:
   autoInitCluster: true
