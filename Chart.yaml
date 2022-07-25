@@ -3,8 +3,3 @@ appVersion: 0.16.0
 description: Stolon - PostgreSQL cloud native High Availability
 name: stolon
 version: 0.3.0
-dependencies:
-- name: etcd
-  repository: https://charts.bitnami.com/bitnami
-  version: 6.13.1
-  condition: etcd.enabled

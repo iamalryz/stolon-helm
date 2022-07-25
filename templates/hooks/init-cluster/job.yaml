@@ -26,7 +26,7 @@ spec:
           echo "Waiting until etcd cluster becomes healthy"
           while true; do
             echo "Checking etcd cluster health"
-            etcdctl endpoint health --cluster --endpoints {{ include "stolon.store.endpoints" . }} && break
+            etcdctl endpoint health --cluster --endpoints {{ .Values.store.endpoints }} && break
             echo
             sleep 5
           done
@@ -49,7 +49,7 @@ spec:
         - name: STOLONCTL_STORE_BACKEND
           value: {{ .Values.store.backend }}
         - name: STOLONCTL_STORE_ENDPOINTS
-          value: {{ include "stolon.store.endpoints" . }}
+          value: {{ .Values.store.endpoints }}
         {{- if .Values.clusterSpec }}
         volumeMounts:
         - name: cluster-spec
