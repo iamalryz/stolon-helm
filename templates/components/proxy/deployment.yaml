@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "stolon.proxy.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.sentinel.replicaCount }}
+  replicas: {{ .Values.proxy.replicaCount }}
   selector:
     matchLabels:
       {{- include "stolon.proxy.selectorLabels" . | nindent 6 }}
@@ -51,7 +51,7 @@ spec:
         - stolon-proxy
         env:
         - name: STPROXY_DEBUG
-          value: {{ .Values.sentinel.debug | quote }}
+          value: {{ .Values.proxy.debug | quote }}
         - name: STPROXY_CLUSTER_NAME
           value: {{ .Values.clusterName }}
         - name: STPROXY_STORE_BACKEND
